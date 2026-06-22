@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indianapolis Concert Match</title>
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f6f7f9; color: #1c2024; line-height: 1.45; padding: 22px; }
+.wrap { max-width: 1080px; margin: 0 auto; }
+header h1 { font-size: 25px; font-weight: 800; letter-spacing: -0.4px; }
+header .sub { color: #5b6470; font-size: 14px; margin-top: 5px; max-width: 800px; }
+header .meta { color: #8a929c; font-size: 12px; margin-top: 7px; }
+
+.setup { background: #fff; border: 1px solid #e7e9ec; border-radius: 14px; padding: 18px 20px; margin: 18px 0; }
+.setup h2 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+.setup p { font-size: 13px; color: #5b6470; margin-bottom: 12px; }
+.setup p a { color: #1a8a3f; font-weight: 600; }
+.setup .field { margin-bottom: 12px; }
+.setup label { display: block; font-size: 12.5px; font-weight: 700; color: #374151; margin-bottom: 5px; }
+.setup label span { font-weight: 500; color: #8a929c; }
+.setup textarea { width: 100%; border: 1px solid #d8dbdf; border-radius: 9px; padding: 10px 12px; font-size: 13px; font-family: inherit; resize: vertical; background: #fcfcfd; color: #1c2024; }
+.setup .go { background: #1a8a3f; color: #fff; border: none; border-radius: 9px; padding: 10px 18px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.setup .go:hover { background: #15803d; }
+.setup .priv { font-size: 11.5px; color: #9aa2ac; margin-top: 10px; }
+.editbar { display: flex; align-items: center; gap: 10px; margin: 4px 0 0; }
+.editbar .who { font-size: 13px; color: #46505b; }
+.editbar .who b { color: #1c2024; }
+.editbtn { background: #fff; border: 1px solid #d8dbdf; border-radius: 8px; padding: 5px 11px; font-size: 12px; font-weight: 600; color: #46505b; cursor: pointer; }
+
+.cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 16px 0 8px; }
+.stat { background: #fff; border: 1px solid #e7e9ec; border-radius: 12px; padding: 12px 14px; }
+.stat .n { font-size: 24px; font-weight: 800; }
+.stat .l { font-size: 11.5px; color: #6b7280; margin-top: 2px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+.stat.t90 .n { color: #15803d; } .stat.t75 .n { color: #0e7490; } .stat.t60 .n { color: #b45309; }
+.section-label { font-size: 11px; font-weight: 700; color: #9aa2ac; text-transform: uppercase; letter-spacing: .5px; margin: 14px 0 6px; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 8px; }
+.controls input[type=text], .controls select { border: 1px solid #d8dbdf; border-radius: 9px; padding: 8px 11px; font-size: 13px; background: #fff; color: #1c2024; }
+.controls input[type=text] { flex: 1; min-width: 160px; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; }
+.bt { border: 1px solid #d8dbdf; background: #fff; border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: #46505b; }
+.bt.active { background: #1c2024; color: #fff; border-color: #1c2024; }
+.bt.venue.active { background: #4f46e5; border-color: #4f46e5; }
+.toggle { font-size: 12.5px; color: #46505b; display: flex; align-items: center; gap: 5px; cursor: pointer; user-select: none; }
+.row { background: #fff; border: 1px solid #e7e9ec; border-radius: 12px; padding: 13px 15px; margin-bottom: 9px; display: grid; grid-template-columns: 60px 1fr 150px; gap: 14px; align-items: center; }
+.date { text-align: center; }
+.date .mo { font-size: 11px; font-weight: 700; color: #9aa2ac; text-transform: uppercase; letter-spacing: .5px; }
+.date .dy { font-size: 21px; font-weight: 800; line-height: 1; }
+.date .yr { font-size: 10.5px; color: #b3bac2; }
+.mid .name { font-size: 16px; font-weight: 700; }
+.mid .tags { margin-top: 4px; }
+.mid .vbadge { font-size: 10.5px; font-weight: 700; color: #3730a3; background: #eef2ff; padding: 2px 7px; border-radius: 5px; vertical-align: middle; }
+.mid .trib { font-size: 10px; font-weight: 700; color: #92400e; background: #fef3c7; padding: 2px 6px; border-radius: 5px; margin-left: 6px; vertical-align: middle; }
+.mid .genre { font-size: 12.5px; color: #6b7280; margin-top: 4px; }
+.mid .reason { font-size: 13px; color: #374151; margin-top: 5px; }
+.right { text-align: right; }
+.badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+.b90 { background: #dcfce7; color: #15803d; } .b75 { background: #cffafe; color: #0e7490; } .b60 { background: #fef3c7; color: #b45309; } .b40 { background: #f1f3f5; color: #6b7280; } .b0 { background: #f1f3f5; color: #aab1b9; }
+.scorewrap { margin-top: 8px; }
+.scorebar { height: 7px; background: #eef0f2; border-radius: 99px; overflow: hidden; }
+.scorefill { height: 100%; border-radius: 99px; }
+.scorenum { font-size: 12px; font-weight: 700; margin-top: 4px; color: #46505b; }
+.links { display: flex; flex-direction: column; gap: 2px; align-items: flex-end; margin-top: 7px; }
+.listen { font-size: 12px; font-weight: 700; color: #1a8a3f; text-decoration: none; }
+.tix { font-size: 12px; font-weight: 600; color: #2563eb; text-decoration: none; }
+.listen:hover, .tix:hover { text-decoration: underline; }
+.empty { text-align: center; color: #8a929c; padding: 30px; font-size: 14px; }
+.foot { color: #9aa2ac; font-size: 11.5px; margin-top: 18px; line-height: 1.6; }
+.hidden { display: none; }
+@media (max-width: 720px) { .cards { grid-template-columns: repeat(2, 1fr); } .row { grid-template-columns: 50px 1fr; } .right { grid-column: 2; text-align: left; } .links { align-items: flex-start; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🎵 Indianapolis Concert Match</h1>
+    <div class="sub">Upcoming shows at four Indy venues — Hi-Fi, Everwise Amphitheater, Old National Centre &amp; Ruoff Music Center — ranked by how well each artist fits <b>your</b> Spotify taste. Paste your stats once and it scores every show for you.</div>
+    <div class="meta" id="meta"></div>
+  </header>
+
+  <div class="setup" id="setup">
+    <h2>Set up your taste profile</h2>
+    <p>Grab your stats from <a href="https://www.statsforspotify.com/artist/top?timeRange=long_term" target="_blank" rel="noopener">Stats for Spotify</a> (log in with Spotify → Top Artists, and Top Genres). Copy the lists and paste them below — numbered or comma-separated, doesn't matter.</p>
+    <div class="field">
+      <label>Your top artists <span>— paste the list (more is better; 15–50 ideal)</span></label>
+      <textarea id="inArtists" rows="5" placeholder="e.g.&#10;1. Tame Impala&#10;2. Khruangbin&#10;3. Mac Miller&#10;... or: Tame Impala, Khruangbin, Mac Miller, ..."></textarea>
+    </div>
+    <div class="field">
+      <label>Your top genres <span>— optional, but improves accuracy a lot</span></label>
+      <textarea id="inGenres" rows="3" placeholder="e.g.&#10;1. Alternative Rock&#10;2. Neo-Psychedelic&#10;3. Indie&#10;... or: alternative rock, neo-psychedelic, indie, hip hop, ..."></textarea>
+    </div>
+    <button class="go" id="rankBtn">Rank my shows →</button>
+    <div class="priv">🔒 Your stats never leave this page — they're saved only in your own browser. Nothing is uploaded.</div>
+  </div>
+
+  <div id="results" class="hidden">
+    <div class="editbar">
+      <div class="who" id="who"></div>
+      <button class="editbtn" id="editBtn">Edit my taste</button>
+    </div>
+    <div class="cards" id="cards"></div>
+    <div class="section-label">Venue</div>
+    <div class="controls"><div class="btns" id="venuebtns"></div></div>
+    <div class="section-label">Match tier</div>
+    <div class="controls"><div class="btns" id="tierbtns"></div></div>
+    <div class="controls" style="margin-top:6px;">
+      <input type="text" id="search" placeholder="Search artist or genre…">
+      <select id="sort"><option value="score">Sort: Best match</option><option value="date">Sort: Date</option></select>
+      <label class="toggle"><input type="checkbox" id="hideTrib"> Hide tribute/cover bands</label>
+    </div>
+    <div id="list"></div>
+  </div>
+
+  <div class="foot" id="foot"></div>
+</div>
+
+<script>
+const SHOWS = [{"artist":"Torn","date":"2026-06-18","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038958373","genre":"beatdown hardcore / metalcore","comps":[],"is_tribute":false},{"artist":"Gwenifer Raymond","date":"2026-06-18","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039164641","genre":"American primitive fingerstyle guitar","comps":["Hermanos Gutiérrez"],"is_tribute":false},{"artist":"girli","date":"2026-06-19","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038073643","genre":"electropop","comps":["Chappell Roan"],"is_tribute":false},{"artist":"Jump - America's Van Halen Experience","date":"2026-06-19","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038314834","genre":"Van Halen tribute","comps":[],"is_tribute":true},{"artist":"The Red Rash","date":"2026-06-20","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038019111","genre":"garage / punk rock","comps":["The Strokes"],"is_tribute":false},{"artist":"Smile Empty Soul","date":"2026-06-24","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038807385","genre":"post-grunge / alt-metal","comps":[],"is_tribute":false},{"artist":"The Movement","date":"2026-06-25","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038449264","genre":"reggae rock","comps":[],"is_tribute":false},{"artist":"Ratboys","date":"2026-06-25","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038388809","genre":"jangly indie rock","comps":["Peach Pit"],"is_tribute":false},{"artist":"Brass Against","date":"2026-06-26","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038860770","genre":"brass rock / protest covers","comps":[],"is_tribute":true},{"artist":"King Buffalo","date":"2026-06-26","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038924610","genre":"heavy psych / stoner rock","comps":["Tame Impala"],"is_tribute":false},{"artist":"Porches","date":"2026-06-27","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039024924","genre":"indie / synth-pop","comps":["Beach House","Tame Impala"],"is_tribute":false},{"artist":"Edgehill","date":"2026-07-02","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038756962","genre":"country / Americana","comps":[],"is_tribute":false},{"artist":"Caitlynne Curtis","date":"2026-07-03","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038562739","genre":"country / rock","comps":[],"is_tribute":false},{"artist":"Joe Marcinek Band","date":"2026-07-09","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038415749","genre":"jam band / funk","comps":[],"is_tribute":false},{"artist":"Isaac Rudd and The Revolvers","date":"2026-07-10","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038982853","genre":"roots / country-rock","comps":["Creedence Clearwater Revival"],"is_tribute":false},{"artist":"Rod Tuffcurls & The Bench Press","date":"2026-07-10","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038896207","genre":"party cover band","comps":[],"is_tribute":true},{"artist":"Congress The Band","date":"2026-07-11","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038622004","genre":"rock","comps":[],"is_tribute":false},{"artist":"John R. Miller","date":"2026-07-12","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039059687","genre":"alt-country / Americana","comps":["Caamp","Mt. Joy"],"is_tribute":false},{"artist":"Roger Clyne & The Peacemakers","date":"2026-07-15","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038061491","genre":"roots / southern rock","comps":["Creedence Clearwater Revival"],"is_tribute":false},{"artist":"Ike Reilly","date":"2026-07-15","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038632593","genre":"roots rock","comps":["The Strokes"],"is_tribute":false},{"artist":"Strangelove - The Depeche Mode Experience","date":"2026-07-18","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038848605","genre":"Depeche Mode tribute","comps":[],"is_tribute":true},{"artist":"Fever Dream","date":"2026-07-18","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038854411","genre":"indie / alt rock","comps":["Last Dinosaurs","Peach Pit"],"is_tribute":false},{"artist":"Dying Wish","date":"2026-07-19","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038841850","genre":"metalcore","comps":[],"is_tribute":false},{"artist":"SensaMotion","date":"2026-07-22","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038709365","genre":"reggae rock","comps":[],"is_tribute":false},{"artist":"Mike Love","date":"2026-07-22","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038702451","genre":"reggae / roots","comps":[],"is_tribute":false},{"artist":"LSD and the Search for God","date":"2026-07-23","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038991314","genre":"shoegaze / neo-psych","comps":["Beach House","Tame Impala"],"is_tribute":false},{"artist":"El Ten Eleven","date":"2026-07-23","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038651856","genre":"instrumental post-rock / electronic","comps":["Khruangbin"],"is_tribute":false},{"artist":"The Album Leaf","date":"2026-07-24","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039177899","genre":"ambient post-rock / electronic","comps":["Beach House"],"is_tribute":false},{"artist":"Rolo Tomassi","date":"2026-07-25","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038311835","genre":"mathcore / metal","comps":[],"is_tribute":false},{"artist":"Drivin' N' Cryin'","date":"2026-07-26","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039076691","genre":"southern rock","comps":["Creedence Clearwater Revival"],"is_tribute":false},{"artist":"Bumpin Uglies","date":"2026-07-27","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038612260","genre":"reggae rock / ska","comps":[],"is_tribute":false},{"artist":"The Format","date":"2026-07-28","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038400366","genre":"indie / desert pop","comps":["Vampire Weekend"],"is_tribute":false},{"artist":"RED VOX","date":"2026-07-29","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038694444","genre":"indie / psych rock","comps":["Tame Impala"],"is_tribute":false},{"artist":"Slow Joy","date":"2026-07-31","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038914989","genre":"shoegaze / grunge","comps":["Beach House"],"is_tribute":false},{"artist":"The Cybertronic Spree","date":"2026-08-01","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039202886","genre":"costume rock / covers","comps":[],"is_tribute":true},{"artist":"Emerson Woolf & the Wishbones","date":"2026-08-02","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038091358","genre":"indie / folk rock","comps":["Mt. Joy"],"is_tribute":false},{"artist":"Shonen Knife","date":"2026-08-04","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038061496","genre":"pop-punk / garage rock","comps":["The Strokes"],"is_tribute":false},{"artist":"Indianapolis ROCK SHOW w/ Stevensons","date":"2026-08-04","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039174495","genre":"rock showcase","comps":[],"is_tribute":false},{"artist":"ALL","date":"2026-08-04","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039217201","genre":"melodic punk rock","comps":["Green Day"],"is_tribute":false},{"artist":"Cole Chaney","date":"2026-08-07","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039011148","genre":"Appalachian country / folk","comps":["Noah Kahan","Caamp"],"is_tribute":false},{"artist":"Sixteen Candles","date":"2026-08-08","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039163398","genre":"'80s tribute / covers","comps":[],"is_tribute":true},{"artist":"Hayden Blount","date":"2026-08-08","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039016188","genre":"singer-songwriter / pop","comps":[],"is_tribute":false},{"artist":"Andy Frasco","date":"2026-08-12","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038350479","genre":"funk / jam band","comps":[],"is_tribute":false},{"artist":"The Ex-Faces","date":"2026-08-13","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038188627","genre":"rock covers","comps":[],"is_tribute":false},{"artist":"Preston Cooper","date":"2026-08-14","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038728590","genre":"country","comps":[],"is_tribute":false},{"artist":"Kompany","date":"2026-08-15","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039132606","genre":"dubstep / bass EDM","comps":["Magic Sword"],"is_tribute":false},{"artist":"Gannon Fremin & CCREV","date":"2026-08-22","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038784051","genre":"country / southern rock","comps":[],"is_tribute":false},{"artist":"Damien Jurado","date":"2026-09-09","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038999327","genre":"indie folk","comps":["Bon Iver","Mt. Joy"],"is_tribute":false},{"artist":"Drew Baldridge","date":"2026-09-10","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038857757","genre":"mainstream country","comps":[],"is_tribute":false},{"artist":"ShadowGrass","date":"2026-09-11","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038684270","genre":"bluegrass","comps":[],"is_tribute":false},{"artist":"anees","date":"2026-09-11","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038972503","genre":"pop / R&B / hip-hop","comps":["Mac Miller","Joji"],"is_tribute":false},{"artist":"Gable Price and Friends","date":"2026-09-15","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038831860","genre":"alt / indie rock","comps":["Mutemath"],"is_tribute":false},{"artist":"Briscoe","date":"2026-09-17","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038775544","genre":"Americana folk-rock","comps":["Mt. Joy","Caamp"],"is_tribute":false},{"artist":"Franklin Jonas & The Byzantines","date":"2026-09-19","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038972138","genre":"indie pop / rock","comps":["Noah Kahan"],"is_tribute":false},{"artist":"Ron Pope","date":"2026-09-20","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038680680","genre":"singer-songwriter / Americana","comps":["Noah Kahan"],"is_tribute":false},{"artist":"Pokey LaFarge","date":"2026-09-27","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038989002","genre":"Americana / old-time","comps":[],"is_tribute":false},{"artist":"Zach John King","date":"2026-10-01","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038999401","genre":"country","comps":[],"is_tribute":false},{"artist":"Bayonne","date":"2026-10-02","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038761720","genre":"electronic / ambient pop","comps":["Fred again..","Beach House"],"is_tribute":false},{"artist":"Apes of the State","date":"2026-10-08","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038492765","genre":"folk-punk","comps":[],"is_tribute":false},{"artist":"Stephen Day","date":"2026-10-09","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039281210","genre":"soul-pop / singer-songwriter","comps":["Al Green","Joji"],"is_tribute":false},{"artist":"Bear Ghost","date":"2026-10-10","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039199082","genre":"theatrical alt rock","comps":[],"is_tribute":false},{"artist":"Red Leather","date":"2026-10-15","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038400339","genre":"synth-pop / indie","comps":["Donny Benét"],"is_tribute":false},{"artist":"Carbon Leaf","date":"2026-10-16","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038954279","genre":"Celtic folk-rock","comps":["Mumford & Sons"],"is_tribute":false},{"artist":"Lilyisthatyou","date":"2026-10-17","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038840419","genre":"bedroom / indie pop","comps":[],"is_tribute":false},{"artist":"Every Avenue","date":"2026-10-21","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039054703","genre":"pop-punk","comps":["Green Day"],"is_tribute":false},{"artist":"Julia Cole","date":"2026-10-24","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039079175","genre":"pop-country","comps":[],"is_tribute":false},{"artist":"Andrew McMahon in the Wilderness","date":"2026-10-25","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039299719","genre":"piano pop-rock","comps":["Harry Styles"],"is_tribute":false},{"artist":"Ivory Layne","date":"2026-10-25","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039298210","genre":"piano pop / singer-songwriter","comps":["Chappell Roan"],"is_tribute":false},{"artist":"Noah Gundersen","date":"2026-10-30","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039147799","genre":"indie folk / Americana","comps":["Bon Iver","Noah Kahan"],"is_tribute":false},{"artist":"The Bends","date":"2026-11-01","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038707501","genre":"alt rock / Radiohead tribute","comps":["Radiohead"],"is_tribute":true},{"artist":"Maddie Zahm","date":"2026-11-04","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039295944","genre":"pop singer-songwriter","comps":["Chappell Roan"],"is_tribute":false},{"artist":"Donny Benet","date":"2026-11-06","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038695482","genre":"synth-funk / disco","comps":["Donny Benét","Parcels","Daft Punk"],"is_tribute":false},{"artist":"Kyle Hume","date":"2026-11-14","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038477470","genre":"pop singer-songwriter","comps":[],"is_tribute":false},{"artist":"Michigander","date":"2026-11-18","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038920943","genre":"indie rock / heartland","comps":["Mt. Joy","Peach Pit"],"is_tribute":false},{"artist":"A Place to Bury Strangers","date":"2026-11-19","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039045239","genre":"noise rock / shoegaze","comps":["Beach House","The Strokes"],"is_tribute":false},{"artist":"Lily Kershaw","date":"2026-11-21","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039227433","genre":"indie folk / singer-songwriter","comps":["Beach House"],"is_tribute":false},{"artist":"Temples","date":"2026-12-09","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1038684745","genre":"neo-psychedelic rock","comps":["Tame Impala","Beach House"],"is_tribute":false},{"artist":"GIFT","date":"2026-12-09","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039028098","genre":"neo-psych / shoegaze","comps":["Tame Impala","Beach House"],"is_tribute":false},{"artist":"RIOT","date":"2026-12-11","venue":"Hi-Fi","url":"https://www.bandsintown.com/e/1039209128","genre":"hard rock / metal","comps":[],"is_tribute":false},{"artist":"The Dead South","date":"2026-06-28","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1037323423","genre":"bluegrass / folk","comps":[],"is_tribute":false},{"artist":"The Fray","date":"2026-07-10","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1037816139","genre":"piano rock / pop rock","comps":[],"is_tribute":false},{"artist":"Death Cab for Cutie","date":"2026-07-12","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1037791570","genre":"indie rock","comps":["Vampire Weekend","Beach House","The Strokes"],"is_tribute":false},{"artist":"Tucker Wetmore","date":"2026-07-18","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038375248","genre":"country","comps":[],"is_tribute":false},{"artist":"Sarah McLachlan","date":"2026-07-19","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038008382","genre":"adult contemporary / pop","comps":[],"is_tribute":false},{"artist":"Jack White","date":"2026-07-21","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038643676","genre":"garage rock / alternative rock","comps":["The Strokes"],"is_tribute":false},{"artist":"Levity","date":"2026-07-24","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038359484","genre":"electronic / dubstep","comps":["Fred again.."],"is_tribute":false},{"artist":"YUNGBLUD","date":"2026-07-28","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1039016568","genre":"alternative rock / pop punk","comps":["Green Day"],"is_tribute":false},{"artist":"Return to Dust","date":"2026-07-28","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038891725","genre":"grunge / alternative rock","comps":["Green Day"],"is_tribute":false},{"artist":"Brit Floyd - The Pink Floyd Tribute Show","date":"2026-07-29","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1037887937","genre":"classic rock tribute","comps":[],"is_tribute":true},{"artist":"Coral Reefer Band","date":"2026-07-30","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038380411","genre":"yacht rock / tropical rock","comps":[],"is_tribute":false},{"artist":"Mac McAnally","date":"2026-07-30","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038352500","genre":"country / singer-songwriter","comps":[],"is_tribute":false},{"artist":"Turnpike Troubadours","date":"2026-07-31","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038463910","genre":"red dirt / Americana","comps":["Mt. Joy"],"is_tribute":false},{"artist":"Darius Rucker","date":"2026-08-01","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038359280","genre":"country / pop rock","comps":[],"is_tribute":false},{"artist":"Dirty Heads","date":"2026-08-02","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038455152","genre":"reggae rock","comps":[],"is_tribute":false},{"artist":"Ocean Alley","date":"2026-08-02","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038926087","genre":"psychedelic rock / indie","comps":["Tame Impala","Khruangbin","Last Dinosaurs"],"is_tribute":false},{"artist":"Beabadoobee","date":"2026-08-04","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038900584","genre":"indie rock / bedroom pop","comps":["Beach House","Peach Pit","The Strokes"],"is_tribute":false},{"artist":"Howard Jones","date":"2026-08-07","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038611763","genre":"synth-pop","comps":[],"is_tribute":false},{"artist":"Young the Giant","date":"2026-08-09","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038355567","genre":"indie rock / alternative rock","comps":["Vampire Weekend","The Strokes"],"is_tribute":false},{"artist":"TheARTI$t","date":"2026-08-10","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1039163002","genre":"hip hop / R&B","comps":["Mac Miller"],"is_tribute":false},{"artist":"Isaia Huron","date":"2026-08-10","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1039152070","genre":"alternative R&B / neo-soul","comps":["Joji","Thundercat"],"is_tribute":false},{"artist":"Kehlani","date":"2026-08-10","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1039130624","genre":"R&B / hip hop","comps":["Mac Miller","Joji"],"is_tribute":false},{"artist":"Simple Plan","date":"2026-08-11","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1037978372","genre":"pop punk","comps":["Green Day"],"is_tribute":false},{"artist":"Andy Grammer","date":"2026-08-12","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038359603","genre":"pop","comps":[],"is_tribute":false},{"artist":"moe.","date":"2026-08-13","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038210321","genre":"jam band","comps":[],"is_tribute":false},{"artist":"Motionless In White","date":"2026-08-14","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1037908131","genre":"metalcore","comps":[],"is_tribute":false},{"artist":"Lindsey Stirling","date":"2026-08-22","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1037812311","genre":"electronic / violin crossover","comps":[],"is_tribute":false},{"artist":"Deep Purple","date":"2026-08-24","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038531308","genre":"classic rock / hard rock","comps":["Creedence Clearwater Revival"],"is_tribute":false},{"artist":"Caamp","date":"2026-08-26","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038023613","genre":"indie folk / Americana","comps":["Mt. Joy","Bon Iver","Mumford & Sons"],"is_tribute":false},{"artist":"NEEDTOBREATHE","date":"2026-08-29","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038327011","genre":"alternative rock / Americana","comps":["Mt. Joy","Mumford & Sons"],"is_tribute":false},{"artist":"Myles Smith","date":"2026-09-02","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1039049080","genre":"folk-pop / indie pop","comps":["Noah Kahan","Mt. Joy"],"is_tribute":false},{"artist":"O.A.R.","date":"2026-09-03","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1037010664","genre":"jam rock / alternative","comps":[],"is_tribute":false},{"artist":"Jonah Kagen","date":"2026-09-08","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038500154","genre":"indie folk / Americana","comps":["Noah Kahan","Mt. Joy","Caamp"],"is_tribute":false},{"artist":"Dermot Kennedy","date":"2026-09-08","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038498697","genre":"indie folk / pop","comps":["Noah Kahan","Bon Iver"],"is_tribute":false},{"artist":"Mt. Joy","date":"2026-09-15","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1037892494","genre":"indie folk / indie rock","comps":["Mt. Joy","Caamp","Noah Kahan"],"is_tribute":false},{"artist":"G $Money","date":"2026-09-20","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1039278920","genre":"hip hop / rap","comps":["Mac Miller"],"is_tribute":false},{"artist":"G-Eazy","date":"2026-09-20","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1038866896","genre":"hip hop / rap","comps":["Mac Miller","Post Malone"],"is_tribute":false},{"artist":"Clint Black","date":"2026-10-09","venue":"Everwise Amphitheater","url":"https://www.bandsintown.com/e/1039210902","genre":"country","comps":[],"is_tribute":false},{"artist":"Hot Mulligan","date":"2026-06-20","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1037814816","genre":"emo / pop punk","comps":[],"is_tribute":false},{"artist":"Connor Price","date":"2026-06-21","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038114872","genre":"pop rap / hip hop","comps":["Mac Miller","Post Malone","Joey Valence & Brae"],"is_tribute":false},{"artist":"Five Iron Frenzy","date":"2026-06-26","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038388213","genre":"ska punk / Christian rock","comps":[],"is_tribute":false},{"artist":"Bill Engvall","date":"2026-06-27","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038410584","genre":"comedy","comps":[],"is_tribute":false},{"artist":"Derek Hough","date":"2026-07-02","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1037132449","genre":"dance / variety","comps":[],"is_tribute":false},{"artist":"Satinder Sartaaj","date":"2026-07-03","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038289124","genre":"Punjabi folk / Sufi","comps":[],"is_tribute":false},{"artist":"Noche de Vibras Sin Ti","date":"2026-07-18","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038704516","genre":"Latin / reggaeton night","comps":[],"is_tribute":false},{"artist":"FLYLEAF with Lacey Sturm","date":"2026-07-21","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038130432","genre":"alternative metal / hard rock","comps":[],"is_tribute":false},{"artist":"Audrey Hobert","date":"2026-07-25","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1037720997","genre":"indie pop / synth-pop","comps":["Chappell Roan","Beach House"],"is_tribute":false},{"artist":"Beach Bunny","date":"2026-07-26","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038288825","genre":"indie rock / indie pop","comps":["Peach Pit","Beach House","Last Dinosaurs"],"is_tribute":false},{"artist":"PJ Morton","date":"2026-07-28","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038770589","genre":"R&B / soul","comps":["Al Green","Thundercat"],"is_tribute":false},{"artist":"Ashnikko","date":"2026-07-29","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038212166","genre":"hyperpop / alt-rap","comps":["Chappell Roan"],"is_tribute":false},{"artist":"Cat Power","date":"2026-08-01","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038127192","genre":"indie rock / singer-songwriter","comps":["Beach House"],"is_tribute":false},{"artist":"Action/Adventure","date":"2026-08-02","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038513501","genre":"pop punk","comps":[],"is_tribute":false},{"artist":"Driveways","date":"2026-08-02","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038463035","genre":"pop punk / post-hardcore","comps":[],"is_tribute":false},{"artist":"Gigi Perez","date":"2026-08-03","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038867342","genre":"indie / singer-songwriter","comps":["Noah Kahan","Beach House"],"is_tribute":false},{"artist":"Waylon Wyatt","date":"2026-08-04","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039042726","genre":"country / Americana","comps":["Sam Hunt"],"is_tribute":false},{"artist":"Herbie Hancock","date":"2026-08-05","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038304403","genre":"jazz / jazz fusion","comps":["Thundercat"],"is_tribute":false},{"artist":"Tori Amos","date":"2026-08-11","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1037750484","genre":"art rock / singer-songwriter","comps":["Beach House"],"is_tribute":false},{"artist":"American Football","date":"2026-08-13","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038344970","genre":"emo / indie rock","comps":["Peach Pit","Beach House"],"is_tribute":false},{"artist":"Bonnie Raitt","date":"2026-08-20","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1037816003","genre":"blues rock / roots rock","comps":["Creedence Clearwater Revival"],"is_tribute":false},{"artist":"Dogstar","date":"2026-08-25","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038251512","genre":"alternative rock","comps":["The Strokes"],"is_tribute":false},{"artist":"Mike Epps","date":"2026-08-28","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039317888","genre":"comedy","comps":[],"is_tribute":false},{"artist":"Fattmack","date":"2026-08-30","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039257360","genre":"trap / hip hop","comps":["Post Malone","Mac Miller"],"is_tribute":false},{"artist":"Masego","date":"2026-09-01","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039266219","genre":"R&B / jazz-hop","comps":["Thundercat","Joji","Khruangbin"],"is_tribute":false},{"artist":"Bilmuri","date":"2026-09-08","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1037968380","genre":"genre-bending rock","comps":[],"is_tribute":false},{"artist":"The Pretty Reckless","date":"2026-09-09","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038329891","genre":"hard rock / alternative rock","comps":["The Strokes"],"is_tribute":false},{"artist":"Juanes","date":"2026-09-16","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038067957","genre":"Latin rock / Latin pop","comps":[],"is_tribute":false},{"artist":"Big Head Todd and The Monsters","date":"2026-09-17","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038096434","genre":"roots rock / blues rock","comps":["Creedence Clearwater Revival"],"is_tribute":false},{"artist":"Suki Waterhouse","date":"2026-09-18","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038867485","genre":"dream pop / indie","comps":["Beach House","Last Dinosaurs"],"is_tribute":false},{"artist":"La La Land in Concert","date":"2026-09-19","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1037309356","genre":"film score / live-to-film","comps":[],"is_tribute":false},{"artist":"Gary Allan","date":"2026-09-24","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038270066","genre":"mainstream country","comps":[],"is_tribute":false},{"artist":"Leonid & Friends","date":"2026-09-25","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1037845140","genre":"Chicago tribute / classic rock","comps":[],"is_tribute":true},{"artist":"Switchfoot","date":"2026-09-25","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038972612","genre":"alternative rock","comps":["The Strokes"],"is_tribute":false},{"artist":"Celtic Thunder","date":"2026-09-26","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038251022","genre":"Celtic / vocal ensemble","comps":[],"is_tribute":false},{"artist":"Sting","date":"2026-10-22","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038194848","genre":"rock / pop rock","comps":["The Strokes"],"is_tribute":false},{"artist":"Nurse John","date":"2026-10-22","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038992450","genre":"comedy","comps":[],"is_tribute":false},{"artist":"Sting","date":"2026-10-23","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038274915","genre":"rock / pop rock","comps":["The Strokes"],"is_tribute":false},{"artist":"Wheeler Walker, Jr.","date":"2026-10-24","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039285636","genre":"outlaw country / comedy country","comps":[],"is_tribute":false},{"artist":"Outlander In Concert","date":"2026-10-25","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038469744","genre":"film score / live-to-film","comps":[],"is_tribute":false},{"artist":"William Shatner","date":"2026-10-30","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038530646","genre":"speaker / spoken word","comps":[],"is_tribute":false},{"artist":"Shakey Graves","date":"2026-10-30","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039028644","genre":"indie folk / Americana","comps":["Mt. Joy","Caamp","Goth Babe"],"is_tribute":false},{"artist":"The Living Tombstone","date":"2026-10-31","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038211720","genre":"electronic rock / internet music","comps":[],"is_tribute":false},{"artist":"The Phil Collins Story","date":"2026-11-01","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038717154","genre":"tribute / classic pop rock","comps":[],"is_tribute":true},{"artist":"The Maine","date":"2026-11-06","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038955335","genre":"alternative rock / pop rock","comps":["The Strokes"],"is_tribute":false},{"artist":"Level Up","date":"2026-11-07","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039357021","genre":"EDM / dubstep","comps":["Magic Sword","Carpenter Brut"],"is_tribute":false},{"artist":"Wage War","date":"2026-11-10","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039297668","genre":"metalcore","comps":[],"is_tribute":false},{"artist":"Daniel Sloss","date":"2026-11-11","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1037978365","genre":"comedy","comps":[],"is_tribute":false},{"artist":"Little Feat","date":"2026-11-11","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038763000","genre":"southern rock / roots rock","comps":["Creedence Clearwater Revival"],"is_tribute":false},{"artist":"Desi Banks","date":"2026-11-13","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038895099","genre":"comedy","comps":[],"is_tribute":false},{"artist":"Little Big Town","date":"2026-11-14","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039287305","genre":"mainstream country","comps":[],"is_tribute":false},{"artist":"Darci Lynne","date":"2026-11-14","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038925933","genre":"variety / ventriloquism","comps":[],"is_tribute":false},{"artist":"Chat Pile","date":"2026-11-20","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039298254","genre":"noise rock / sludge metal","comps":[],"is_tribute":false},{"artist":"Dweezil Zappa","date":"2026-11-21","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039216198","genre":"prog rock / instrumental rock","comps":[],"is_tribute":false},{"artist":"Aly & AJ","date":"2026-12-01","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1037996011","genre":"indie pop / synth-pop","comps":["Chappell Roan","Beach House"],"is_tribute":false},{"artist":"Mojo Brookzz","date":"2026-12-04","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038976001","genre":"comedy","comps":[],"is_tribute":false},{"artist":"Underoath","date":"2026-12-05","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039301803","genre":"metalcore / post-hardcore","comps":[],"is_tribute":false},{"artist":"Moscow Ballet's Nutcracker","date":"2026-12-15","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1038561317","genre":"ballet / classical","comps":[],"is_tribute":false},{"artist":"Straight No Chaser","date":"2026-12-18","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039065039","genre":"a cappella / holiday","comps":[],"is_tribute":false},{"artist":"Straight No Chaser","date":"2026-12-19","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039065065","genre":"a cappella / holiday","comps":[],"is_tribute":false},{"artist":"Straight No Chaser","date":"2026-12-20","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039065449","genre":"a cappella / holiday","comps":[],"is_tribute":false},{"artist":"RuPaul's Drag Race Live","date":"2027-04-01","venue":"Old National Centre","url":"https://www.bandsintown.com/e/1039093740","genre":"drag / live variety","comps":[],"is_tribute":false},{"artist":"Godsmack, Stone Temple Pilots & Dorothy","date":"2026-06-18","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/godsmack-stone-temple-pilots-dorothy+ruoff-music-center+noblesville-in","genre":"hard rock / alternative metal","comps":[],"is_tribute":false},{"artist":"Kid Rock & Jon Pardi","date":"2026-06-19","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/kid-rock-jon-pardi+ruoff-music-center+noblesville-in","genre":"country rock / rap rock","comps":[],"is_tribute":false},{"artist":"Machine Gun Kelly & Wiz Khalifa","date":"2026-06-20","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/machine-gun-kelly-wiz-khalifa+ruoff-music-center+noblesville-in","genre":"hip hop / pop punk","comps":[],"is_tribute":false},{"artist":"Santana & The Doobie Brothers","date":"2026-06-21","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/santana-the-doobie-brothers+ruoff-music-center+noblesville-in","genre":"classic rock","comps":[],"is_tribute":false},{"artist":"Riley Green, Justin Moore & Mackenzie Carpenter","date":"2026-06-25","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/riley-green-justin-moore-mackenzie-carpenter-adam-hood+ruoff-music-center+noblesville-in","genre":"mainstream country","comps":[],"is_tribute":false},{"artist":"Dave Matthews Band","date":"2026-06-26","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/dave-matthews-band+ruoff-music-center+noblesville-in","genre":"jam band / rock","comps":[],"is_tribute":false},{"artist":"Dave Matthews Band","date":"2026-06-27","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/dave-matthews-band+ruoff-music-center+noblesville-in","genre":"jam band / rock","comps":[],"is_tribute":false},{"artist":"Pussycat Dolls, Lil' Kim & Mya","date":"2026-06-28","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/pussycat-dolls-lil-kim-mya+ruoff-music-center+noblesville-in","genre":"pop / R&B / hip hop","comps":[],"is_tribute":false},{"artist":"Jack Johnson","date":"2026-07-04","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/jack-johnson+ruoff-music-center+noblesville-in","genre":"acoustic / soft rock","comps":[],"is_tribute":false},{"artist":"Muse","date":"2026-07-07","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/muse+ruoff-music-center+noblesville-in","genre":"alternative rock / art rock","comps":["Radiohead","Tame Impala"],"is_tribute":false},{"artist":"Evanescence, Spiritbox & Nova Twins","date":"2026-07-09","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/evanescence-spiritbox-nova-twins+ruoff-music-center+noblesville-in","genre":"hard rock / metalcore","comps":[],"is_tribute":false},{"artist":"Phish","date":"2026-07-10","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/phish+ruoff-music-center+noblesville-in","genre":"jam band","comps":[],"is_tribute":false},{"artist":"Phish","date":"2026-07-11","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/phish+ruoff-music-center+noblesville-in","genre":"jam band","comps":[],"is_tribute":false},{"artist":"Phish","date":"2026-07-12","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/phish+ruoff-music-center+noblesville-in","genre":"jam band","comps":[],"is_tribute":false},{"artist":"The Black Crowes, Whiskey Myers & Southall","date":"2026-07-17","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/the-black-crowes-whiskey-myers-southall+ruoff-music-center+noblesville-in","genre":"southern rock / classic rock","comps":["Creedence Clearwater Revival"],"is_tribute":false},{"artist":"John Mellencamp","date":"2026-07-18","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/john-mellencamp+ruoff-music-center+noblesville-in","genre":"heartland rock","comps":[],"is_tribute":false},{"artist":"Hilary Duff, La Roux & Jade LeMac","date":"2026-07-23","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/hilary-duff-la-roux-jade-lemac+ruoff-music-center+noblesville-in","genre":"pop / synth-pop","comps":["Parcels"],"is_tribute":false},{"artist":"5 Seconds of Summer","date":"2026-07-25","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/5-seconds-of-summer+ruoff-music-center+noblesville-in","genre":"pop rock / pop punk","comps":[],"is_tribute":false},{"artist":"Train, Barenaked Ladies & Matt Nathanson","date":"2026-08-01","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/train-barenaked-ladies-matt-nathanson+ruoff-music-center+noblesville-in","genre":"pop rock","comps":[],"is_tribute":false},{"artist":"Chicago - The Band & Styx","date":"2026-08-02","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/chicago-the-band-styx+ruoff-music-center+noblesville-in","genre":"classic rock","comps":[],"is_tribute":false},{"artist":"Weird Al Yankovic","date":"2026-08-06","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/weird-al-yankovic+ruoff-music-center+noblesville-in","genre":"comedy / parody","comps":[],"is_tribute":false},{"artist":"Lynyrd Skynyrd & Foreigner","date":"2026-08-07","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/lynyrd-skynyrd-foreigner+ruoff-music-center+noblesville-in","genre":"southern rock / classic rock","comps":["Creedence Clearwater Revival"],"is_tribute":false},{"artist":"Five Finger Death Punch & Cody Jinks","date":"2026-08-08","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/five-finger-death-punch-cody-jinks-eva-under-fire+ruoff-music-center+noblesville-in","genre":"heavy metal","comps":[],"is_tribute":false},{"artist":"TLC, Salt-N-Pepa & En Vogue","date":"2026-08-20","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/tlc-salt-n-pepa-en-vogue+ruoff-music-center+noblesville-in","genre":"R&B / hip hop","comps":[],"is_tribute":false},{"artist":"Tedeschi Trucks Band & Alabama Shakes","date":"2026-08-22","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/tedeschi-trucks-band-alabama-shakes+ruoff-music-center+noblesville-in","genre":"blues rock / southern soul","comps":["Al Green"],"is_tribute":false},{"artist":"Outlaw Festival: Willie Nelson & The Avett Brothers","date":"2026-08-23","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/outlaw-festival-willie-nelson-avett-brothers-lukas-nelson+ruoff-music-center+noblesville-in","genre":"Americana / country folk","comps":["Mumford & Sons","Caamp","Mt. Joy"],"is_tribute":false},{"artist":"Motley Crue & Tesla","date":"2026-08-28","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/motley-crue-tesla+ruoff-music-center+noblesville-in","genre":"glam metal / hard rock","comps":[],"is_tribute":false},{"artist":"Kesha","date":"2026-08-30","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/kesha+ruoff-music-center+noblesville-in","genre":"pop / dance pop","comps":[],"is_tribute":false},{"artist":"Babymetal & Halestorm","date":"2026-09-05","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/babymetal-halestorm-violent-vira+ruoff-music-center+noblesville-in","genre":"metal","comps":[],"is_tribute":false},{"artist":"Rob Zombie & Marilyn Manson","date":"2026-09-06","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/rob-zombie-marilyn-manson+ruoff-music-center+noblesville-in","genre":"industrial metal","comps":[],"is_tribute":false},{"artist":"Yacht Rock Revue","date":"2026-09-12","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/yacht-rock-revue+ruoff-music-center+noblesville-in","genre":"soft rock tribute","comps":[],"is_tribute":true},{"artist":"Breaking Benjamin, Chevelle & Starset","date":"2026-09-16","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/breaking-benjamin-chevelle-starset+ruoff-music-center+noblesville-in","genre":"hard rock / post-grunge","comps":[],"is_tribute":false},{"artist":"Tim McGraw & 49 Winchester","date":"2026-09-18","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/tim-mcgraw-49-winchester+ruoff-music-center+noblesville-in","genre":"mainstream country","comps":[],"is_tribute":false},{"artist":"Pitbull & Lil Jon","date":"2026-09-19","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/pitbull-lil-jon+ruoff-music-center+noblesville-in","genre":"pop rap / dance","comps":[],"is_tribute":false},{"artist":"$uicideboy$ & Destroy Lonely","date":"2026-09-20","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/suicideboys-destroy-lonely+ruoff-music-center+noblesville-in","genre":"underground hip hop / trap","comps":["Tyler The Creator","Mac Miller"],"is_tribute":false},{"artist":"Staind, Seether, Hoobastank & Hinder","date":"2026-09-26","venue":"Ruoff Music Center","url":"https://concertfix.com/tours/staind-seether-hoobastank-hinder+ruoff-music-center+noblesville-in","genre":"post-grunge / hard rock","comps":[],"is_tribute":false}];
+
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const TODAY = "2026-06-18";
+const TIERS = ["Don't miss","Strong","Worth a look","Maybe","Skip"];
+const STORE_KEY = "concertMatchProfile_v1";
+
+/* ---------- concept model (maps free-text genres to broad sound concepts) ---------- */
+const CONCEPT_KEYWORDS = {
+  psych:       ["psychedel","neo-psych","neo psych","psych"],
+  indie:       ["indie","dream pop","jangle","bedroom"],
+  altrock:     ["alternative","alt rock","alt-rock","art rock","art-rock","garage","shoegaze","post-punk","post punk","grunge","noise rock"],
+  classicrock: ["classic rock","southern rock","roots rock","blues rock","heartland","country rock","country-rock"],
+  folk:        ["folk","americana","bluegrass","singer-songwriter","singer songwriter"],
+  hiphop:      ["hip hop","hip-hop","hiphop","rap","trap","west coast","jazz-hop","jazz hop"],
+  electronic:  ["electronic","edm","french house","house","electro","synthwave","synth-wave","synth wave","dubstep","techno","folktronica","ambient","bass music","dance pop","dance-pop"],
+  pop:         ["pop","synth-pop","synth pop","indie pop","hyperpop","electropop","power pop","art-pop","art pop"],
+  rnbsoul:     ["r&b","rnb","soul","neo-soul","neo soul","funk","jazz","disco"],
+  metalpunk:   ["metal","metalcore","hardcore","punk","emo","post-hardcore","sludge","nu-metal","nu metal","hard rock","post-grunge","post grunge"],
+  reggae:      ["reggae","ska","dub"],
+  country:     ["country","red dirt","honky-tonk","honky tonk"],
+  jam:         ["jam band","jam-band","jam rock","funk-fusion","jam"],
+  nonmusic:    ["comedy","ballet","film score","live-to-film","variety","spoken word","speaker","a cappella","drag","ventriloq","classical","sufi","celtic"]
+};
+const CONCEPT_LABEL = {
+  psych:"psychedelic", indie:"indie", altrock:"alternative/garage rock", classicrock:"classic/southern rock",
+  folk:"folk & Americana", hiphop:"hip-hop/rap", electronic:"electronic/house", pop:"pop",
+  rnbsoul:"R&B/soul/funk", metalpunk:"punk/heavy", reggae:"reggae", country:"country", jam:"jam band", nonmusic:"non-music event"
+};
+function conceptsOf(text){
+  const t = " " + text.toLowerCase() + " ";
+  const out = new Set();
+  for (const c in CONCEPT_KEYWORDS) for (const kw of CONCEPT_KEYWORDS[c]) if (t.includes(kw)) { out.add(c); break; }
+  return out;
+}
+
+/* ---------- text parsing ---------- */
+function stripDiacritics(s){ return s.normalize("NFD").replace(/[̀-ͯ]/g,""); }
+function norm(s){ return stripDiacritics(String(s).toLowerCase()).replace(/&/g," and ").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim(); }
+const IGNORE = ["top artists","top tracks","top genres","tracks","artists","genres","recently played","account","stats for spotify","top","last 4 weeks","last 6 months","last 12 months","page","privacy notice","imprint"];
+function parseList(text){
+  if(!text) return [];
+  let items = [];
+  const numbered = text.match(/\d+\s*\.\s*([^\n]+?)(?=\s+\d+\s*\.|\n|$)/g);
+  if (numbered && numbered.length >= 2) {
+    items = numbered.map(x => x.replace(/^\s*\d+\s*\.\s*/, ""));
+  } else {
+    items = text.split(/[\n,;]+/);
+  }
+  const seen = new Set(); const out = [];
+  for (let it of items){
+    it = it.replace(/^\s*\d+[\.\)]\s*/, "").replace(/\(.*?\)/g,"").trim();
+    it = it.replace(/\s{2,}.*$/, "").trim(); // drop trailing junk after big gap
+    if (it.length < 2 || it.length > 45) continue;
+    if (!/[a-zA-Z]/.test(it)) continue;
+    const low = it.toLowerCase();
+    if (IGNORE.some(ig => low === ig || low.startsWith(ig))) continue;
+    if (/^https?:/i.test(low) || /^\d+\s*of\s*\d+$/.test(low)) continue;
+    const key = norm(it);
+    if (!key || seen.has(key)) continue;
+    seen.add(key); out.push(it.trim());
+  }
+  return out;
+}
+
+/* ---------- scoring ---------- */
+let PROFILE = null; // {artists:[], artistSet:Set, genres:[], conceptWeight:{}}
+function buildProfile(artistsRaw, genresRaw){
+  const artists = parseList(artistsRaw);
+  const genres = parseList(genresRaw);
+  const artistSet = new Set(artists.map(norm));
+  // concept weights from genres (higher-ranked genre => more weight)
+  const cw = {}; const N = Math.max(genres.length, 1);
+  genres.forEach((g, i) => { const w = (N - i); conceptsOf(g).forEach(c => { cw[c] = (cw[c]||0) + w; }); });
+  // if no genres given, derive light concept weights from artists' implied genres? keep simple: leave empty -> rely on artist/comp + show genre presence
+  let max = 0; for (const c in cw) max = Math.max(max, cw[c]);
+  if (max > 0) for (const c in cw) cw[c] = cw[c] / max; // normalize 0..1
+  return { artists, genres, artistSet, conceptWeight: cw };
+}
+function scoreShow(s, P){
+  // 1) artist is literally in their top artists
+  if (P.artistSet.has(norm(s.artist))) {
+    return { score: 97, reason: "🎯 One of your top artists — guaranteed.", matched: [] };
+  }
+  const showC = conceptsOf(s.genre);
+  const hasGenreProfile = Object.keys(P.conceptWeight).length > 0;
+  // comp (sounds-like) matches against their top artists
+  const compHits = (s.comps||[]).filter(a => P.artistSet.has(norm(a)));
+  // genre concept overlap
+  let matched = [];
+  if (hasGenreProfile) {
+    matched = [...showC].filter(c => P.conceptWeight[c] > 0).sort((a,b)=>P.conceptWeight[b]-P.conceptWeight[a]);
+  }
+  let genreBase;
+  if (matched.length) {
+    const w = matched.map(c => P.conceptWeight[c]);
+    // matching ANY of your genres earns a solid base; a top-ranked genre earns more
+    genreBase = 44 + 30*w[0] + (w[1]?10*w[1]:0) + (w[2]?5*w[2]:0);
+  } else if (!hasGenreProfile && showC.size && !showC.has("nonmusic")) {
+    genreBase = 42; // no genre profile to compare; lean on comparable-artist matches
+  } else {
+    genreBase = showC.has("nonmusic") ? 6 : 28;
+  }
+  let score = genreBase + Math.min(16, 8*compHits.length);
+  if (s.is_tribute) score *= 0.6;
+  if (showC.has("nonmusic") && matched.length===0) score = Math.min(score, 14);
+  // reserve 90+ ("Don't miss") for artists literally in your library; everything else caps at Strong
+  score = Math.max(5, Math.min(88, Math.round(score)));
+  // reason
+  const parts = [];
+  if (matched.length) parts.push("Matches your taste for " + matched.slice(0,3).map(c=>CONCEPT_LABEL[c]).join(", ") + ".");
+  if (compHits.length) parts.push("Sounds like " + compHits.slice(0,3).join(", ") + " (in your top artists).");
+  if (s.is_tribute) parts.push("Note: this is a tribute/cover act.");
+  if (!parts.length) parts.push(showC.has("nonmusic") ? "Not a music concert." : "Limited overlap with your top genres.");
+  return { score, reason: parts.join(" "), matched };
+}
+function tierOf(score){ if(score>=90)return"Don't miss"; if(score>=75)return"Strong"; if(score>=60)return"Worth a look"; if(score>=40)return"Maybe"; return"Skip"; }
+function tierClass(t){return {"Don't miss":"b90","Strong":"b75","Worth a look":"b60","Maybe":"b40","Skip":"b0"}[t];}
+function scoreColor(s){ if(s>=90)return"#16a34a"; if(s>=75)return"#0891b2"; if(s>=60)return"#d97706"; if(s>=40)return"#9ca3af"; return"#cbd5e1"; }
+
+/* ---------- state + scored data ---------- */
+let SCORED = [];
+let state = { search:"", sort:"score", tier:"all", venue:"all", hideTrib:false };
+const VENUES = [...new Set(SHOWS.map(s=>s.venue))];
+
+function applyProfile(P){
+  PROFILE = P;
+  SCORED = SHOWS.filter(s=>s.date>=TODAY).map(s => { const r = scoreShow(s, P); return Object.assign({}, s, { score:r.score, tier:tierOf(r.score), reason:r.reason }); });
+}
+function venueScoped(){ let r = SCORED; if(state.venue!=="all") r=r.filter(d=>d.venue===state.venue); return r; }
+
+function buildStats(){
+  const rows = venueScoped(); const c={dm:0,st:0,wl:0};
+  rows.forEach(d=>{ if(d.tier==="Don't miss")c.dm++; else if(d.tier==="Strong")c.st++; else if(d.tier==="Worth a look")c.wl++; });
+  document.getElementById("cards").innerHTML =
+    `<div class="stat"><div class="n">${rows.length}</div><div class="l">Shows${state.venue!=="all"?" here":""}</div></div>`+
+    `<div class="stat t90"><div class="n">${c.dm}</div><div class="l">Don't miss</div></div>`+
+    `<div class="stat t75"><div class="n">${c.st}</div><div class="l">Strong fit</div></div>`+
+    `<div class="stat t60"><div class="n">${c.wl}</div><div class="l">Worth a look</div></div>`+
+    `<div class="stat"><div class="n">${c.dm+c.st+c.wl}</div><div class="l">Recommended</div></div>`;
+}
+function buildVenueBtns(){
+  const counts={}; VENUES.forEach(v=>counts[v]=0); SCORED.forEach(d=>{ if(counts[d.venue]!==undefined)counts[d.venue]++; });
+  let html=`<button class="bt venue active" data-v="all">All venues (${SCORED.length})</button>`;
+  VENUES.forEach(v=>{ html+=`<button class="bt venue" data-v="${v}">${v} (${counts[v]})</button>`; });
+  const el=document.getElementById("venuebtns"); el.innerHTML=html;
+  el.querySelectorAll(".bt").forEach(b=>b.onclick=()=>{ state.venue=b.dataset.v; el.querySelectorAll(".bt").forEach(x=>x.classList.remove("active")); b.classList.add("active"); buildStats(); buildTierBtns(); render(); });
+}
+function buildTierBtns(){
+  const counts={}; TIERS.forEach(t=>counts[t]=0); venueScoped().forEach(d=>counts[d.tier]++);
+  let html=`<button class="bt active" data-t="all">All</button>`;
+  TIERS.forEach(t=>{ html+=`<button class="bt" data-t="${t}">${t} (${counts[t]})</button>`; });
+  const el=document.getElementById("tierbtns"); el.innerHTML=html; state.tier="all";
+  el.querySelectorAll(".bt").forEach(b=>b.onclick=()=>{ state.tier=b.dataset.t; el.querySelectorAll(".bt").forEach(x=>x.classList.remove("active")); b.classList.add("active"); render(); });
+}
+function render(){
+  let rows = venueScoped();
+  if(state.tier!=="all") rows=rows.filter(d=>d.tier===state.tier);
+  if(state.hideTrib) rows=rows.filter(d=>!d.is_tribute);
+  if(state.search){ const q=state.search.toLowerCase(); rows=rows.filter(d=>d.artist.toLowerCase().includes(q)||d.genre.toLowerCase().includes(q)); }
+  rows.sort((a,b)=> state.sort==="date" ? a.date.localeCompare(b.date) : (b.score-a.score)||a.date.localeCompare(b.date));
+  const list=document.getElementById("list");
+  if(!rows.length){ list.innerHTML=`<div class="empty">No shows match these filters.</div>`; return; }
+  list.innerHTML = rows.map(d=>{
+    const [y,m,dd]=d.date.split("-");
+    const trib = d.is_tribute ? `<span class="trib">tribute / covers</span>` : "";
+    return `<div class="row">
+      <div class="date"><div class="mo">${MONTHS[+m-1]}</div><div class="dy">${+dd}</div><div class="yr">${y}</div></div>
+      <div class="mid">
+        <div class="name">${d.artist}</div>
+        <div class="tags"><span class="vbadge">${d.venue}</span>${trib}</div>
+        <div class="genre">${d.genre}</div>
+        <div class="reason">${d.reason}</div>
+      </div>
+      <div class="right">
+        <span class="badge ${tierClass(d.tier)}">${d.tier}</span>
+        <div class="scorewrap"><div class="scorebar"><div class="scorefill" style="width:${d.score}%;background:${scoreColor(d.score)}"></div></div><div class="scorenum">${d.score}/100 match</div></div>
+        <div class="links">
+          <a class="listen" href="https://open.spotify.com/search/${encodeURIComponent(d.artist)}" target="_blank" rel="noopener">▶ Listen on Spotify</a>
+          <a class="tix" href="${d.url}" target="_blank" rel="noopener">Tickets →</a>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function showResults(P, artistsRaw, genresRaw){
+  applyProfile(P);
+  document.getElementById("setup").classList.add("hidden");
+  document.getElementById("results").classList.remove("hidden");
+  document.getElementById("who").innerHTML = `Ranked for <b>${P.artists.length}</b> of your top artists` + (P.genres.length?` &amp; <b>${P.genres.length}</b> genres`:``) + `.`;
+  state = { search:"", sort:"score", tier:"all", venue:"all", hideTrib:false };
+  document.getElementById("search").value=""; document.getElementById("sort").value="score"; document.getElementById("hideTrib").checked=false;
+  buildStats(); buildVenueBtns(); buildTierBtns(); render();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+document.getElementById("rankBtn").onclick = () => {
+  const a = document.getElementById("inArtists").value;
+  const g = document.getElementById("inGenres").value;
+  const P = buildProfile(a, g);
+  if (P.artists.length < 3 && P.genres.length < 2) { alert("Please paste at least a few of your top artists (or genres) so it has something to match against."); return; }
+  try { localStorage.setItem(STORE_KEY, JSON.stringify({a, g})); } catch(e){}
+  showResults(P, a, g);
+};
+document.getElementById("editBtn").onclick = () => {
+  document.getElementById("results").classList.add("hidden");
+  document.getElementById("setup").classList.remove("hidden");
+  window.scrollTo({top:0, behavior:"smooth"});
+};
+
+document.getElementById("search").oninput = e=>{ state.search=e.target.value; render(); };
+document.getElementById("sort").onchange = e=>{ state.sort=e.target.value; render(); };
+document.getElementById("hideTrib").onchange = e=>{ state.hideTrib=e.target.checked; render(); };
+
+const total = SHOWS.filter(s=>s.date>=TODAY).length;
+document.getElementById("meta").textContent = `${total} upcoming shows across ${VENUES.length} venues · lineup current as of Jun 18, 2026`;
+document.getElementById("foot").innerHTML = "Match scores are heuristic — computed in your browser from overlap between your top genres/artists and each show's genre &amp; comparable artists. Lineups from Bandsintown / Concertfix. Old National Centre includes some non-music events (comedy, ballet) which score low. Built for the Indianapolis area.";
+
+/* restore saved profile */
+(function(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+    if (saved && (saved.a || saved.g)) {
+      document.getElementById("inArtists").value = saved.a || "";
+      document.getElementById("inGenres").value = saved.g || "";
+      const P = buildProfile(saved.a||"", saved.g||"");
+      if (P.artists.length || P.genres.length) showResults(P, saved.a||"", saved.g||"");
+    }
+  } catch(e){}
+})();
+</script>
+</body>
+</html>
